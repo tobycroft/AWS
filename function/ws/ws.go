@@ -1,7 +1,7 @@
 package ws
 
-import "github.com/gin-gonic/gin"
+import "github.com/gorilla/websocket"
 
-func On(c *gin.Context) {
+func Handler(c *websocket.Conn) {
 
 }
