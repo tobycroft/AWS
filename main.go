@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"io"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -45,11 +44,5 @@ func main() {
 		}
 	})
 
-	// http echo
-	r.GET("/http", func(c *gin.Context) {
-		io.Copy(c.Writer, c.Request.Body)
-	})
-
 	r.Run(":80")
-
 }
