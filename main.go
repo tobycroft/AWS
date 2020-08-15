@@ -20,13 +20,18 @@ func main() {
 			return
 		} else {
 			defer on_close(conn)
-			// 读取一个包
-			//mt, d, err := conn.ReadMessage()
-			//
-			//if err != nil {
-			//	fmt.Printf("read fail = %v\n", err)
-			//	return
-			//}
+			//连入时发送欢迎消息
+			on_connect(conn)
+			for {
+				mt, d, err := conn.ReadMessage()
+
+				if err != nil {
+					fmt.Printf("read fail = %v\n", err)
+					break
+				}
+				fmt.Println(mt, string(d), err)
+			}
+
 			//
 			//fmt.Printf("data:%s\n", d)
 			// 写入一个包
@@ -35,15 +40,17 @@ func main() {
 			//	fmt.Printf("write fail = %v\n", err)
 			//	return
 			//}
-			on_connect(conn)
+
 		}
 	})
-
+	r.Any("/test", func(c *gin.Context) {
+		c.File("html/index.html")
+	})
 	r.Run(":80")
 }
 
 func on_connect(conn *websocket.Conn) {
-	err := conn.WriteMessage(200, []byte("连入成功"))
+	err := conn.WriteMessage(1, []byte("连入成功"))
 	if err != nil {
 		fmt.Printf("write fail = %v\n", err)
 		return
