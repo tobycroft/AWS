@@ -26,7 +26,7 @@ func main() {
 	r.Any("/test", func(c *gin.Context) {
 		c.File("html/index.html")
 	})
-	r.Run(config.SERVER_LISTEN_ADDR + ":" + config.SERVER_LISTEN_PORT)
+	r.Run(":" + config.SERVER_LISTEN_PORT)
 }
 
 func ws_handler(conn *websocket.Conn) {
