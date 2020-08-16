@@ -10,6 +10,8 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
+var user2ws map[string]*websocket.Conn
+var ws2user map[*websocket.Conn]string
 
 func main() {
 	r := gin.Default()
@@ -41,6 +43,7 @@ func ws_handler(conn *websocket.Conn) {
 	go on_connect(conn)
 	for {
 		mt, d, err := conn.ReadMessage()
+		conn.RemoteAddr()
 		if mt == -1 {
 			break
 		}
@@ -49,7 +52,7 @@ func ws_handler(conn *websocket.Conn) {
 			fmt.Printf("read fail = %v\n", err)
 			break
 		}
-		ws.Handler(string(d))
+		ws.Handler(string(d), conn)
 	}
 }
 
