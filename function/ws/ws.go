@@ -84,12 +84,3 @@ func Handler(json_str string, conn *websocket.Conn) {
 		break
 	}
 }
-
-func retjson(json map[string]interface{}) string {
-	ret, err := Jsong.Encode(json)
-	if err != nil {
-		return ""
-	} else {
-		return ret
-	}
-}
