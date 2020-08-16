@@ -73,6 +73,30 @@ func Handler(json_str string, conn *websocket.Conn) {
 		private_msg(conn, data)
 		break
 
+	case "group_msg":
+		group_msg(conn, data)
+		break
+
+	case "requst_count":
+		requst_count(conn, data)
+		break
+
+	case "ping":
+		ping(conn, data)
+		break
+
+	case "api":
+		api(conn, data)
+		break
+
+	case "clear_private_unread":
+		clear_private_unread(conn, data)
+		break
+
+	case "clear_group_unread":
+		clear_group_unread(conn, data)
+		break
+
 	default:
 		break
 	}
@@ -386,7 +410,109 @@ func api(conn *websocket.Conn, data map[string]interface{}) {
 			if err != nil {
 				res := map[string]interface{}{
 					"code": 404,
-					"data": "Req_Count不完整",
+					"data": "API不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+}
+
+func clear_private_unread(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		if data["id"] == nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "id",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+			return
+		}
+		ret, err := Net.Post(config.CHAT_URL+config.Clear_private_unread, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"fid": data["id"],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "API不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+}
+
+func clear_group_unread(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		if data["id"] == nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "id",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+			return
+		}
+		ret, err := Net.Post(config.CHAT_URL+config.Clear_group_unread, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"gid": data["id"],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "API不完整",
 					"type": data["type"],
 				}
 				conn.WriteJSON(res)
