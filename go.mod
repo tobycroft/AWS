@@ -11,6 +11,6 @@ require (
 	github.com/gomodule/redigo v1.8.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.9
-	github.com/kirinlabs/HttpRequest v1.0.5 // indirect
+	github.com/kirinlabs/HttpRequest v1.0.5
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 )

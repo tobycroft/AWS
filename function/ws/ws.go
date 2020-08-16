@@ -14,10 +14,10 @@ var Ws2User map[*websocket.Conn]string
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
-	str, _ := Jsong.Encode(map[string]interface{}{
+	str := map[string]interface{}{
 		"data": "连入成功",
-	})
-	err := conn.WriteMessage(1, []byte(str))
+	}
+	err := conn.WriteJSON(str)
 
 	if err != nil {
 		fmt.Printf("write fail = %v\n", err)
@@ -82,5 +82,14 @@ func Handler(json_str string, conn *websocket.Conn) {
 
 	default:
 		break
+	}
+}
+
+func retjson(json map[string]interface{}) string {
+	ret, err := Jsong.Encode(json)
+	if err != nil {
+		return ""
+	} else {
+		return ret
 	}
 }

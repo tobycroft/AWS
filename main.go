@@ -10,8 +10,6 @@ import (
 )
 
 var upgrader = websocket.Upgrader{}
-var user2ws map[string]*websocket.Conn
-var ws2user map[*websocket.Conn]string
 
 func main() {
 	r := gin.Default()
@@ -19,12 +17,14 @@ func main() {
 	r.Any("/", func(c *gin.Context) {
 		r := c.Request
 		w := c.Writer
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			fmt.Printf("err = %s\n", err)
+		if !websocket.IsWebSocketUpgrade(r) {
 			http.Handler(c)
 			return
 		} else {
+			conn, err := upgrader.Upgrade(w, r, nil)
+			if err != nil {
+				fmt.Printf("err = %s\n", err)
+			}
 			ws_handler(conn)
 		}
 	})
@@ -38,9 +38,9 @@ func main() {
 }
 
 func ws_handler(conn *websocket.Conn) {
-	defer on_close(conn)
+	defer ws.On_close(conn)
 	//连入时发送欢迎消息
-	go on_connect(conn)
+	go ws.On_connect(conn)
 	for {
 		mt, d, err := conn.ReadMessage()
 		conn.RemoteAddr()
@@ -54,20 +54,4 @@ func ws_handler(conn *websocket.Conn) {
 		}
 		ws.Handler(string(d), conn)
 	}
-}
-
-func on_connect(conn *websocket.Conn) {
-	err := conn.WriteMessage(1, []byte("连入成功"))
-	if err != nil {
-		fmt.Printf("write fail = %v\n", err)
-		return
-	}
-}
-
-func on_close(conn *websocket.Conn) {
-	// 发送 websocket 结束包
-	conn.WriteMessage(websocket.CloseMessage,
-		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-	// 真正关闭 conn
-	conn.Close()
 }
