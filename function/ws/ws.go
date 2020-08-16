@@ -9,9 +9,9 @@ import (
 	"main.go/tuuz/Net"
 )
 
-var User2Ws map[string]*websocket.Conn
-var Ws2User map[*websocket.Conn]string
-var Room map[*websocket.Conn]int
+var User2Conn map[string]*websocket.Conn
+var Conn2User map[*websocket.Conn]string
+var Room map[string]int
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
@@ -87,9 +87,9 @@ func Handler(json_str string, conn *websocket.Conn) {
 				conn.WriteJSON(res)
 			} else {
 				if rtt["code"] == 0 {
-					User2Ws[uid] = conn
-					Ws2User[conn] = uid
-					Room[conn] = 0
+					User2Conn[uid] = conn
+					Conn2User[conn] = uid
+					Room[uid] = 0
 					message := "欢迎" + uid + "连入聊天服务器"
 					if config.DEBUG {
 						fmt.Println(message)
@@ -113,35 +113,57 @@ func Handler(json_str string, conn *websocket.Conn) {
 		break
 
 	case "join_room", "JOIN_ROOM":
-		if Ws2User[conn] != "" {
-			if data["chat_type"] == "private" {
-				res := map[string]interface{}{
-					"code": 0,
-					"data": "已经加入和" + Calc.Any2String(data["id"]),
-					"type": data["type"],
-				}
-				conn.WriteJSON(res)
-			} else if data["chat_type"] == "group" {
-				res := map[string]interface{}{
-					"code": 0,
-					"data": "已经加入和" + Calc.Any2String(data["id"]),
-					"type": data["type"],
-				}
-				conn.WriteJSON(res)
-			} else {
-				res := map[string]interface{}{
-					"code": 400,
-					"data": "类型不存在",
-					"type": data["type"],
-				}
-				conn.WriteJSON(res)
-			}
-		} else {
-			conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
-		}
+		join_room(conn, data)
+		break
+
+	case "exit_room", "EXIT_ROOM":
+		exit_room(conn, data)
 		break
 
 	default:
 		break
+	}
+}
+
+func join_room(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		if data["chat_type"] == "private" {
+			res := map[string]interface{}{
+				"code": 0,
+				"data": "已经加入和" + Calc.Any2String(data["id"]),
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else if data["chat_type"] == "group" {
+			res := map[string]interface{}{
+				"code": 0,
+				"data": "已经加入和" + Calc.Any2String(data["id"]),
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "类型不存在",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+}
+
+func exit_room(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		Room[Conn2User[conn]] = 0
+		res := map[string]interface{}{
+			"code": 0,
+			"data": "退出至大厅",
+			"type": data["type"],
+		}
+		conn.WriteJSON(res)
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
 	}
 }
