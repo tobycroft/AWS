@@ -1,7 +1,7 @@
 package config
 
 const SERVER_LISTEN_ADDR = "0.0.0.0"
-const SERVER_LISTEN_PORT = "81"
+const SERVER_LISTEN_PORT = "80"
 
 const LOG = false
 
