@@ -65,6 +65,14 @@ func Handler(json_str string, conn *websocket.Conn) {
 		exit_room(conn, data)
 		break
 
+	case "msg_list", "MSG_LIST":
+		msg_list(conn, data)
+		break
+
+	case "private_msg", "PRIVATE_MSG":
+		private_msg(conn, data)
+		break
+
 	default:
 		break
 	}
@@ -170,4 +178,102 @@ func exit_room(conn *websocket.Conn, data map[string]interface{}) {
 	} else {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
 	}
+}
+
+func msg_list(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "消息列表数据不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				} else {
+					res := map[string]interface{}{
+						"code": -1,
+						"data": "未登录",
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+
+}
+
+func private_msg(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "消息列表数据不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				} else {
+					res := map[string]interface{}{
+						"code": -1,
+						"data": "未登录",
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+
 }

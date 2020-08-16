@@ -1,6 +1,6 @@
 package config
 
-const SERVER_LISTEN_ADDR = "0.0.0.0"
+const SERVER_LISTEN_ADDR = ""
 const SERVER_LISTEN_PORT = "80"
 
 const LOG = false
@@ -9,6 +9,7 @@ const DEBUG = false
 const DEBUG_AUTH = false
 const DEBUG_WS_REQ = false
 const DEBUG_WS_RET = false
+const DEBUG_REMOTE_RET = false
 
 const TIMER = false
 const DEBUG_CONN = false
