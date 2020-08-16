@@ -312,3 +312,96 @@ func group_msg(conn *websocket.Conn, data map[string]interface{}) {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
 	}
 }
+
+func requst_count(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		ret, err := Net.Post(config.CHAT_URL+config.Request_count, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "Req_Count不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+}
+
+func ping(conn *websocket.Conn, data map[string]interface{}) {
+	Room[Conn2User[conn]] = 0
+	res := map[string]interface{}{
+		"code": 0,
+		"data": "PONG",
+		"type": data["type"],
+	}
+	conn.WriteJSON(res)
+}
+
+func api(conn *websocket.Conn, data map[string]interface{}) {
+	if Conn2User[conn] != "" {
+		function := Calc.Any2String(data["func"])
+		ret, err := Net.Post(config.CHAT_URL+config.ManualAPI+function, nil, map[string]interface{}{
+			"uid": Conn2User[conn],
+			"ip":  conn.RemoteAddr(),
+		}, nil, nil)
+		if config.DEBUG_REMOTE_RET {
+			fmt.Println("DEBUG_REMOTE_RET", ret, err)
+		}
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
+				res := map[string]interface{}{
+					"code": 404,
+					"data": "Req_Count不完整",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				if rtt["code"] == 0 {
+					res := map[string]interface{}{
+						"code": 0,
+						"data": rtt["data"],
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
+		}
+	} else {
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+	}
+}
