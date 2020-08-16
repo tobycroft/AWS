@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"main.go/config"
+	"main.go/function/ws"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -26,7 +27,7 @@ func main() {
 	r.Any("/test", func(c *gin.Context) {
 		c.File("html/index.html")
 	})
-	r.Run(":" + config.SERVER_LISTEN_PORT)
+	r.Run(config.SERVER_LISTEN_ADDR + ":" + config.SERVER_LISTEN_PORT)
 }
 
 func ws_handler(conn *websocket.Conn) {
@@ -35,12 +36,15 @@ func ws_handler(conn *websocket.Conn) {
 	go on_connect(conn)
 	for {
 		mt, d, err := conn.ReadMessage()
-
+		if mt == -1 {
+			break
+		}
 		if err != nil {
+			fmt.Println(mt)
 			fmt.Printf("read fail = %v\n", err)
 			break
 		}
-		fmt.Println(mt, string(d))
+		ws.Handler(string(d))
 	}
 }
 

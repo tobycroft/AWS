@@ -1,7 +1,7 @@
 package ws
 
-import "github.com/gorilla/websocket"
+import "fmt"
 
-func Handler(c *websocket.Conn) {
-
+func Handler(json_str string) {
+	fmt.Println(json_str)
 }
