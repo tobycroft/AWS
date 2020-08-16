@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"main.go/config"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -19,34 +20,28 @@ func main() {
 			fmt.Printf("err = %s\n", err)
 			return
 		} else {
-			defer on_close(conn)
-			//连入时发送欢迎消息
-			on_connect(conn)
-			for {
-				mt, d, err := conn.ReadMessage()
-
-				if err != nil {
-					fmt.Printf("read fail = %v\n", err)
-					break
-				}
-				fmt.Println(mt, string(d), err)
-			}
-
-			//
-			//fmt.Printf("data:%s\n", d)
-			// 写入一个包
-			//err = conn.WriteMessage(mt, d)
-			//if err != nil {
-			//	fmt.Printf("write fail = %v\n", err)
-			//	return
-			//}
-
+			ws_handler(conn)
 		}
 	})
 	r.Any("/test", func(c *gin.Context) {
 		c.File("html/index.html")
 	})
-	r.Run(":80")
+	r.Run(":" + config.SERVER_LISTEN_PORT)
+}
+
+func ws_handler(conn *websocket.Conn) {
+	defer on_close(conn)
+	//连入时发送欢迎消息
+	go on_connect(conn)
+	for {
+		mt, d, err := conn.ReadMessage()
+
+		if err != nil {
+			fmt.Printf("read fail = %v\n", err)
+			break
+		}
+		fmt.Println(mt, string(d))
+	}
 }
 
 func on_connect(conn *websocket.Conn) {
