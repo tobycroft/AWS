@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"main.go/config"
+	"main.go/function/http"
 	"main.go/function/ws"
 )
 
@@ -19,6 +20,7 @@ func main() {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			fmt.Printf("err = %s\n", err)
+			http.Handler(c)
 			return
 		} else {
 			ws_handler(conn)
@@ -26,6 +28,9 @@ func main() {
 	})
 	r.Any("/test", func(c *gin.Context) {
 		c.File("html/index.html")
+	})
+	r.Any("/favicon.ico", func(c *gin.Context) {
+		c.Abort()
 	})
 	r.Run(config.SERVER_LISTEN_ADDR + ":" + config.SERVER_LISTEN_PORT)
 }
