@@ -53,9 +53,9 @@ func Handler(json_str string, conn *websocket.Conn) {
 	}
 	switch Calc.Any2String(json["type"]) {
 	case "init", "INIT":
-		uid := data["uid"]
-		token := data["token"]
-		if uid == nil || token == nil {
+		uid := Calc.Any2String(data["uid"])
+		token := Calc.Any2String(data["token"])
+		if uid == "" || token == "" {
 			On_close(conn)
 			fmt.Println("uid_not_exists,UID-token不存在")
 		}
@@ -76,7 +76,22 @@ func Handler(json_str string, conn *websocket.Conn) {
 			}
 			conn.WriteJSON(res)
 		} else {
+			rtt, err := Jsong.JObject(ret)
+			if err != nil {
 
+			} else {
+				if rtt["code"] == 0 {
+					User2Ws[uid] = conn
+					Ws2User[conn] = uid
+				} else {
+					res := map[string]interface{}{
+						"code": 400,
+						"data": "网络错误请重试",
+						"type": data["type"],
+					}
+					conn.WriteJSON(res)
+				}
+			}
 		}
 		break
 
