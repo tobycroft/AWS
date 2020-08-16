@@ -54,62 +54,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 	}
 	switch Calc.Any2String(json["type"]) {
 	case "init", "INIT":
-		uid := Calc.Any2String(data["uid"])
-		token := Calc.Any2String(data["token"])
-		if uid == "" || token == "" {
-			On_close(conn)
-			fmt.Println("uid_not_exists,UID-token不存在")
-		}
-		ret, err := Net.Post("/api/auth/userauth", nil, map[string]interface{}{
-			"uid":   uid,
-			"token": token,
-			"type":  1,
-			"ip":    conn.RemoteAddr(),
-		}, nil, nil)
-		if config.DEBUG_AUTH {
-			fmt.Println("DEBUG_AUTH", ret, err)
-		}
-		if err != nil {
-			res := map[string]interface{}{
-				"code": 400,
-				"data": "网络错误请重试",
-				"type": data["type"],
-			}
-			conn.WriteJSON(res)
-		} else {
-			rtt, err := Jsong.JObject(ret)
-			if err != nil {
-				res := map[string]interface{}{
-					"code": 400,
-					"data": "网络错误请重试",
-					"type": data["type"],
-				}
-				conn.WriteJSON(res)
-			} else {
-				if rtt["code"] == 0 {
-					User2Conn[uid] = conn
-					Conn2User[conn] = uid
-					Room[uid] = 0
-					message := "欢迎" + uid + "连入聊天服务器"
-					if config.DEBUG {
-						fmt.Println(message)
-					}
-					res := map[string]interface{}{
-						"code": 0,
-						"data": "初始化完成",
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
-				} else {
-					res := map[string]interface{}{
-						"code": -1,
-						"data": "未登录",
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
-				}
-			}
-		}
+		auth_init(conn, data)
 		break
 
 	case "join_room", "JOIN_ROOM":
@@ -122,6 +67,65 @@ func Handler(json_str string, conn *websocket.Conn) {
 
 	default:
 		break
+	}
+}
+
+func auth_init(conn *websocket.Conn, data map[string]interface{}) {
+	uid := Calc.Any2String(data["uid"])
+	token := Calc.Any2String(data["token"])
+	if uid == "" || token == "" {
+		On_close(conn)
+		fmt.Println("uid_not_exists,UID-token不存在")
+	}
+	ret, err := Net.Post(config.CHAT_URL+config.AuthURL, nil, map[string]interface{}{
+		"uid":   uid,
+		"token": token,
+		"type":  1,
+		"ip":    conn.RemoteAddr(),
+	}, nil, nil)
+	if config.DEBUG_AUTH {
+		fmt.Println("DEBUG_AUTH", ret, err)
+	}
+	if err != nil {
+		res := map[string]interface{}{
+			"code": 400,
+			"data": "网络错误请重试",
+			"type": data["type"],
+		}
+		conn.WriteJSON(res)
+	} else {
+		rtt, err := Jsong.JObject(ret)
+		if err != nil {
+			res := map[string]interface{}{
+				"code": 400,
+				"data": "网络错误请重试",
+				"type": data["type"],
+			}
+			conn.WriteJSON(res)
+		} else {
+			if rtt["code"] == 0 {
+				User2Conn[uid] = conn
+				Conn2User[conn] = uid
+				Room[uid] = 0
+				message := "欢迎" + uid + "连入聊天服务器"
+				if config.DEBUG {
+					fmt.Println(message)
+				}
+				res := map[string]interface{}{
+					"code": 0,
+					"data": "初始化完成",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			} else {
+				res := map[string]interface{}{
+					"code": -1,
+					"data": "未登录",
+					"type": data["type"],
+				}
+				conn.WriteJSON(res)
+			}
+		}
 	}
 }
 
