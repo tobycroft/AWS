@@ -184,7 +184,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 					"message": message,
 					"type":    Type,
 				}
-				if config.DEBUG {
+				if config.DEBUG_WS_RET {
 					fmt.Println("DEBUG", res)
 				}
 				conn.WriteJSON(res)
@@ -194,7 +194,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 					"data": "未登录",
 					"type": Type,
 				}
-				if config.DEBUG {
+				if config.DEBUG_WS_RET {
 					fmt.Println("DEBUG", res)
 				}
 				conn.WriteJSON(res)
