@@ -27,6 +27,7 @@ func On_connect(conn *websocket.Conn) {
 }
 
 func On_close(conn *websocket.Conn) {
+	delete(Room, Conn2User[conn])
 	delete(User2Conn, Conn2User[conn])
 	delete(Conn2User, conn)
 	// 发送 websocket 结束包
