@@ -23,7 +23,7 @@ func On_connect(conn *websocket.Conn) {
 	}
 	str := map[string]interface{}{
 		"code": 0,
-		"data": "连入成功",
+		"data": message,
 		"type": "connected",
 	}
 	err := conn.WriteJSON(str)
