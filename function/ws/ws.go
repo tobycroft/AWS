@@ -237,7 +237,7 @@ func exit_room(conn *websocket.Conn, data map[string]interface{}) {
 }
 
 func msg_list(conn *websocket.Conn, data map[string]interface{}) {
-	fmt.Println("msg_list", Conn2User[conn])
+	fmt.Println("msg_list", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -278,6 +278,7 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}) {
 }
 
 func private_msg(conn *websocket.Conn, data map[string]interface{}) {
+	fmt.Println("private_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -318,6 +319,7 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}) {
 }
 
 func group_msg(conn *websocket.Conn, data map[string]interface{}) {
+	fmt.Println("group_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Group_msg, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
