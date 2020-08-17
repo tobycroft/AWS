@@ -14,15 +14,15 @@ import (
 var transport *http.Transport
 
 var dailer = &net.Dialer{
-	Timeout:   5 * time.Second,
-	KeepAlive: 0 * time.Second,
+	Timeout:   10 * time.Second,
+	KeepAlive: 120 * time.Second,
 	DualStack: true,
 }
 
 func init() {
 	transport = &http.Transport{
 		DialContext:  dailer.DialContext,
-		MaxIdleConns: 100,
+		MaxIdleConns: 10,
 	}
 }
 
