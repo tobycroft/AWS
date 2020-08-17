@@ -76,7 +76,7 @@ func Handler(c *gin.Context) {
 	if jerr != nil {
 		c.JSON(200, map[string]interface{}{
 			"code": 400,
-			"data": "json_err",
+			"data": "data需要提交",
 		})
 		c.Abort()
 		return
@@ -204,10 +204,35 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 			id := Calc.Any2String(uid)
 			user_room[id] = ws.Room[id]
 		}
-
-		break
+		c.JSON(200, map[string]interface{}{
+			"code": 0,
+			"data": user_room,
+		})
+		c.Abort()
+		return
 
 	default:
+		for _, uid := range to_users {
+			if ws.Room[Calc.Any2String(uid)] == dest {
+				conn := ws.User2Conn[Calc.Any2String(uid)]
+				if conn != nil {
+					uids = append(uids, uid)
+					conn.WriteJSON(data)
+				}
+			}
+			uidf = append(uidf, uid)
+		}
 		break
 	}
+
+	c.JSON(200, map[string]interface{}{
+		"code": 0,
+		"data": map[string]interface{}{
+			"success": uids,
+			"fail":    uidf,
+		},
+	})
+	c.Abort()
+	return
+
 }
