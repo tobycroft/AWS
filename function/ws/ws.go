@@ -11,7 +11,7 @@ import (
 
 var User2Conn map[string]*websocket.Conn
 var Conn2User map[*websocket.Conn]string
-var Room map[string]int
+var Room map[string]string
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
@@ -38,7 +38,7 @@ func On_close(conn *websocket.Conn) {
 }
 
 func Handler(json_str string, conn *websocket.Conn) {
-	//fmt.Println(json_str)
+	fmt.Println("json_str:", json_str)
 	json, jerr := Jsong.JObject(json_str)
 	if jerr != nil {
 		fmt.Println("jsonerr", jerr)
@@ -141,7 +141,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 			if rtt["code"] == 0 {
 				User2Conn[uid] = conn
 				Conn2User[conn] = uid
-				Room[uid] = 0
+				Room[uid] = "0"
 				message := "欢迎" + uid + "连入聊天服务器"
 				if config.DEBUG {
 					fmt.Println(message)
@@ -195,7 +195,7 @@ func join_room(conn *websocket.Conn, data map[string]interface{}) {
 
 func exit_room(conn *websocket.Conn, data map[string]interface{}) {
 	if Conn2User[conn] != "" {
-		Room[Conn2User[conn]] = 0
+		Room[Conn2User[conn]] = "0"
 		res := map[string]interface{}{
 			"code": 0,
 			"data": "退出至大厅",
