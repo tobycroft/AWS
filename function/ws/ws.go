@@ -381,7 +381,6 @@ func requst_count(conn *websocket.Conn, data map[string]interface{}) {
 }
 
 func ping(conn *websocket.Conn, data map[string]interface{}) {
-	Room[Conn2User[conn]] = 0
 	res := map[string]interface{}{
 		"code": 0,
 		"data": "PONG",
