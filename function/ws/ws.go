@@ -227,7 +227,6 @@ func join_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 			conn.WriteJSON(res)
 		}
 		Room[Conn2User[conn]] = Calc.Any2String(data["id"])
-		fmt.Println("rooom:", Room[Conn2User[conn]])
 	} else {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
@@ -288,7 +287,6 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func private_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	fmt.Println("private_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -329,7 +327,6 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}, Type string)
 }
 
 func group_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	fmt.Println("group_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Group_msg, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
