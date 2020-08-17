@@ -49,11 +49,6 @@ func Handler(c *gin.Context) {
 	}
 	dest, ok := Input.Post("dest", c, false)
 	if !ok {
-		c.JSON(200, map[string]interface{}{
-			"code": 400,
-			"data": "需要dest参数，dest为chat_id或者gid",
-		})
-		c.Abort()
 		return
 	}
 	data, ok := Input.Post("data", c, false)
