@@ -237,6 +237,7 @@ func exit_room(conn *websocket.Conn, data map[string]interface{}) {
 }
 
 func msg_list(conn *websocket.Conn, data map[string]interface{}) {
+	fmt.Println("msg_list", Conn2User[conn])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -262,21 +263,12 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
-				} else {
-					res := map[string]interface{}{
-						"code": -1,
-						"data": "未登录",
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
