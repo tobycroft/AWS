@@ -151,6 +151,9 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 				"data": "网络错误请重试",
 				"type": data["type"],
 			}
+			if config.DEBUG {
+				fmt.Println("DEBUG", ret, err)
+			}
 			conn.WriteJSON(res)
 		} else {
 			if rtt["code"] == 0 {
@@ -166,12 +169,18 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 					"data": "初始化完成",
 					"type": data["type"],
 				}
+				if config.DEBUG {
+					fmt.Println("DEBUG", res)
+				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": -1,
 					"data": "未登录",
 					"type": data["type"],
+				}
+				if config.DEBUG {
+					fmt.Println("DEBUG", res)
 				}
 				conn.WriteJSON(res)
 			}
