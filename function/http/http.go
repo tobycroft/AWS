@@ -82,6 +82,7 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	fmt.Println("http_a")
 	json_handler(c, json, to_users, dest, Type)
 }
 
