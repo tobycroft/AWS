@@ -182,7 +182,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 					"code":    0,
 					"data":    "初始化完成",
 					"message": message,
-					"type":    data["type"],
+					"type":    Type,
 				}
 				if config.DEBUG {
 					fmt.Println("DEBUG", res)
