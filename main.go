@@ -29,7 +29,7 @@ func main() {
 		}
 	})
 	r.Any("/test", func(c *gin.Context) {
-		c.File("html/index.html")
+		c.File("./html/index.html")
 	})
 	r.Any("/favicon.ico", func(c *gin.Context) {
 		c.Abort()
