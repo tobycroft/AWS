@@ -114,7 +114,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 	uid := Calc.Any2String(data["uid"])
 	token := Calc.Any2String(data["token"])
 	if uid == "" || token == "" {
-		//On_close(conn)
+		On_close(conn)
 		fmt.Println("uid_not_exists,UID-token不存在")
 	}
 	ret, err := Net.Post(config.CHAT_URL+config.AuthURL, nil, map[string]interface{}{
