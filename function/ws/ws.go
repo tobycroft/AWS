@@ -16,7 +16,9 @@ var Room map[string]string
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
 	str := map[string]interface{}{
+		"code": 0,
 		"data": "连入成功",
+		"type": "connected",
 	}
 	err := conn.WriteJSON(str)
 
