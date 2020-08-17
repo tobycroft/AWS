@@ -60,7 +60,6 @@ func Handler(c *gin.Context) {
 	if !ok {
 		return
 	}
-	fmt.Println(data)
 	Type, ok := c.GetPostForm("type")
 	if !ok {
 		c.JSON(200, map[string]interface{}{
