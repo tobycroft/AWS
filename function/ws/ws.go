@@ -116,6 +116,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 		break
 
 	default:
+		fmt.Println("undefine_type:", Type)
 		break
 	}
 }
