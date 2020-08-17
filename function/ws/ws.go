@@ -122,7 +122,6 @@ func Handler(json_str string, conn *websocket.Conn) {
 }
 
 func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	fmt.Println("authinit", data)
 	uid := Calc.Any2String(data["uid"])
 	token := Calc.Any2String(data["token"])
 	if uid == "" || token == "" {
