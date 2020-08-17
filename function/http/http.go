@@ -11,8 +11,6 @@ import (
 )
 
 func Handler(c *gin.Context) {
-	fmt.Println("aaaa")
-
 	key, ok := c.GetPostForm("key")
 	if !ok {
 		c.JSON(200, map[string]interface{}{
@@ -39,6 +37,7 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
 	to_users, err := Jsong.JArray(uids)
 	if err != nil {
 		c.JSON(200, map[string]interface{}{
@@ -57,13 +56,8 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	data, ok := c.GetPostForm("data")
+	data, ok := Input.Post("data", c, false)
 	if !ok {
-		c.JSON(200, map[string]interface{}{
-			"code": 400,
-			"data": "data",
-		})
-		c.Abort()
 		return
 	}
 	fmt.Println(data)
