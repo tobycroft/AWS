@@ -7,9 +7,14 @@ import (
 	"main.go/config"
 	"main.go/function/http"
 	"main.go/function/ws"
+	http2 "net/http"
 )
 
-var upgrader = websocket.Upgrader{}
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http2.Request) bool {
+		return true
+	},
+}
 
 func main() {
 	r := gin.Default()
