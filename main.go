@@ -18,6 +18,7 @@ func main() {
 		r := c.Request
 		w := c.Writer
 		if !websocket.IsWebSocketUpgrade(r) {
+			fmt.Println("http")
 			http.Handler(c)
 			return
 		} else {
