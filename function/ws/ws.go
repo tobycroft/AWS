@@ -52,7 +52,9 @@ func On_exit(conn *websocket.Conn) {
 }
 
 func Handler(json_str string, conn *websocket.Conn) {
-	fmt.Println("json_ws:", json_str)
+	if config.DEBUG {
+		fmt.Println("json_ws:", json_str)
+	}
 	json, jerr := Jsong.JObject(json_str)
 	if jerr != nil {
 		fmt.Println("jsonerr", jerr)
