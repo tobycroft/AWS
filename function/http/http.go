@@ -17,6 +17,7 @@ func Handler(c *gin.Context) {
 			"code": 400,
 			"data": "key",
 		})
+		fmt.Println("key")
 		c.Abort()
 		return
 	}
@@ -34,6 +35,7 @@ func Handler(c *gin.Context) {
 			"code": 400,
 			"data": "需要uids来发送数据",
 		})
+		fmt.Println("uids")
 		c.Abort()
 		return
 	}
@@ -44,15 +46,18 @@ func Handler(c *gin.Context) {
 			"code": 400,
 			"data": "to_users_err",
 		})
+		fmt.Println("to_user")
 		c.Abort()
 		return
 	}
 	dest, ok := Input.Post("dest", c, false)
 	if !ok {
+		fmt.Println("dest")
 		return
 	}
 	data, ok := Input.Post("data", c, false)
 	if !ok {
+		fmt.Println("data")
 		return
 	}
 	Type, ok := c.GetPostForm("type")
@@ -61,6 +66,7 @@ func Handler(c *gin.Context) {
 			"code": 400,
 			"data": "需要type类型,chat/message_list/system",
 		})
+		fmt.Println("type")
 		c.Abort()
 		return
 	}
@@ -191,20 +197,20 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 		}
 		break
 
-	case "user_room":
-		user_room := map[string]interface{}{}
-		for _, uid := range to_users {
-			id := Calc.Any2String(uid)
-			user_room[id] = ws.Room[id]
-		}
-		c.JSON(200, map[string]interface{}{
-			"code": 0,
-			"data": user_room,
-		})
-		c.Abort()
-		return
+	//case "user_room":
+	//	user_room := map[string]string{}
+	//	for _, uid := range to_users {
+	//		id := Calc.Any2String(uid)
+	//		user_room[id] = ws.Room[id]
+	//	}
+	//	c.JSON(200, map[string]interface{}{
+	//		"code": 0,
+	//		"data": user_room,
+	//	})
+	//	break
 
 	default:
+		fmt.Println("default")
 		for _, uid := range to_users {
 			if ws.Room[Calc.Any2String(uid)] == dest {
 				conn := ws.User2Conn[Calc.Any2String(uid)]
