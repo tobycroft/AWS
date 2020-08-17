@@ -202,7 +202,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	}
 }
 
-func join_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func join_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["chat_type"] == "private" {
 			res := map[string]interface{}{
@@ -233,7 +233,7 @@ func join_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type 
 	}
 }
 
-func exit_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func exit_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		Room[Conn2User[conn]] = "0"
 		res := map[string]interface{}{
@@ -247,7 +247,7 @@ func exit_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type 
 	}
 }
 
-func msg_listauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func msg_list(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("msg_list", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
@@ -288,7 +288,7 @@ func msg_listauth_init(conn *websocket.Conn, data map[string]interface{}, Type s
 
 }
 
-func private_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func private_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("private_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
@@ -329,7 +329,7 @@ func private_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Typ
 	}
 }
 
-func group_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func group_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("group_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Group_msg, nil, map[string]interface{}{
@@ -370,7 +370,7 @@ func group_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Type 
 	}
 }
 
-func requst_countauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func requst_count(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Request_count, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -409,7 +409,7 @@ func requst_countauth_init(conn *websocket.Conn, data map[string]interface{}, Ty
 	}
 }
 
-func pingauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func ping(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	res := map[string]interface{}{
 		"code": 0,
 		"data": "PONG",
@@ -418,7 +418,7 @@ func pingauth_init(conn *websocket.Conn, data map[string]interface{}, Type strin
 	conn.WriteJSON(res)
 }
 
-func apiauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func api(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		function := Calc.Any2String(data["func"])
 		ret, err := Net.Post(config.CHAT_URL+config.ManualAPI+function, nil, map[string]interface{}{
@@ -458,7 +458,7 @@ func apiauth_init(conn *websocket.Conn, data map[string]interface{}, Type string
 	}
 }
 
-func clear_private_unreadauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func clear_private_unread(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["id"] == nil {
 			res := map[string]interface{}{
@@ -507,7 +507,7 @@ func clear_private_unreadauth_init(conn *websocket.Conn, data map[string]interfa
 	}
 }
 
-func clear_group_unreadauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
+func clear_group_unread(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["id"] == nil {
 			res := map[string]interface{}{
