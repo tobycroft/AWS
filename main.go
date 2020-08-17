@@ -24,6 +24,7 @@ func main() {
 			conn, err := upgrader.Upgrade(w, r, nil)
 			if err != nil {
 				fmt.Printf("err = %s\n", err)
+				return
 			}
 			ws_handler(conn)
 		}
