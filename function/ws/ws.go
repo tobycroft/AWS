@@ -27,14 +27,18 @@ func On_connect(conn *websocket.Conn) {
 }
 
 func On_close(conn *websocket.Conn) {
-	delete(Room, Conn2User[conn])
-	delete(User2Conn, Conn2User[conn])
-	delete(Conn2User, conn)
+	On_exit(conn)
 	// 发送 websocket 结束包
 	conn.WriteMessage(websocket.CloseMessage,
 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	// 真正关闭 conn
 	conn.Close()
+}
+
+func On_exit(conn *websocket.Conn) {
+	delete(Room, Conn2User[conn])
+	delete(User2Conn, Conn2User[conn])
+	delete(Conn2User, conn)
 }
 
 func Handler(json_str string, conn *websocket.Conn) {
