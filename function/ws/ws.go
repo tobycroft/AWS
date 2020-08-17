@@ -36,9 +36,12 @@ func On_close(conn *websocket.Conn) {
 }
 
 func On_exit(conn *websocket.Conn) {
-	delete(Room, Conn2User[conn])
-	delete(User2Conn, Conn2User[conn])
-	delete(Conn2User, conn)
+	if Conn2User[conn] != "" {
+		delete(Room, Conn2User[conn])
+		delete(User2Conn, Conn2User[conn])
+		delete(Conn2User, conn)
+	}
+
 }
 
 func Handler(json_str string, conn *websocket.Conn) {
