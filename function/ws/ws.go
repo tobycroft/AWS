@@ -5,8 +5,10 @@ import (
 	"github.com/gorilla/websocket"
 	"main.go/config"
 	"main.go/tuuz/Calc"
+	"main.go/tuuz/Date"
 	"main.go/tuuz/Jsong"
 	"main.go/tuuz/Net"
+	"time"
 )
 
 var User2Conn map[string]*websocket.Conn
@@ -15,6 +17,10 @@ var Room map[string]string
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
+	message := map[string]interface{}{
+		"remote_addr":  conn.RemoteAddr(),
+		"connect_time": Date.Int2Date(time.Now().Unix()),
+	}
 	str := map[string]interface{}{
 		"code": 0,
 		"data": "连入成功",
