@@ -47,7 +47,7 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	dest, ok := Input.PostInt("dest", c)
+	dest, ok := Input.Post("dest", c, false)
 	if !ok {
 		c.JSON(200, map[string]interface{}{
 			"code": 400,
@@ -56,12 +56,10 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	fmt.Println("dest")
 	data, ok := Input.Post("data", c, false)
 	if !ok {
 		return
 	}
-	fmt.Println(data)
 	Type, ok := c.GetPostForm("type")
 	if !ok {
 		c.JSON(200, map[string]interface{}{
@@ -71,7 +69,6 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	fmt.Println("htpjspon", data)
 	json, jerr := Jsong.JObject(data)
 	if jerr != nil {
 		c.JSON(200, map[string]interface{}{
@@ -84,7 +81,7 @@ func Handler(c *gin.Context) {
 	json_handler(c, json, to_users, dest, Type)
 }
 
-func json_handler(c *gin.Context, json map[string]interface{}, to_users []interface{}, dest int, Type string) {
+func json_handler(c *gin.Context, json map[string]interface{}, to_users []interface{}, dest string, Type string) {
 	fmt.Println("json_handler", json)
 	uids := []interface{}{}
 	uidf := []interface{}{}
