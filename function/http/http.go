@@ -11,6 +11,8 @@ import (
 )
 
 func Handler(c *gin.Context) {
+	fmt.Println("aaaa")
+
 	key, ok := c.GetPostForm("key")
 	if !ok {
 		c.JSON(200, map[string]interface{}{
@@ -64,6 +66,7 @@ func Handler(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	fmt.Println(data)
 	Type, ok := c.GetPostForm("type")
 	if !ok {
 		c.JSON(200, map[string]interface{}{
