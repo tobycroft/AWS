@@ -50,6 +50,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 	if config.DEBUG_WS_REQ {
 		fmt.Println("DEBUG_WS_REQ:type", json["type"])
 	}
+	fmt.Println("data")
 	data, derr := Jsong.ParseObject(json["data"])
 	if derr != nil {
 		fmt.Println("jsondataerr", derr)
