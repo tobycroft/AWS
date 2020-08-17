@@ -139,7 +139,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 	ret, err := Net.Post(config.CHAT_URL+config.AuthURL, nil, map[string]interface{}{
 		"uid":   uid,
 		"token": token,
-		"type":  data["type"],
+		"type":  1,
 		"ip":    conn.RemoteAddr(),
 	}, nil, nil)
 	if config.DEBUG_AUTH {
