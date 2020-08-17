@@ -69,49 +69,50 @@ func Handler(json_str string, conn *websocket.Conn) {
 		data = map[string]interface{}{}
 		return
 	}
-	switch Calc.Any2String(json["type"]) {
+	Type := Calc.Any2String(json["type"])
+	switch Type {
 	case "init", "INIT":
-		auth_init(conn, data)
+		auth_init(conn, data, Type)
 		break
 
 	case "join_room", "JOIN_ROOM":
-		join_room(conn, data)
+		join_room(conn, data, Type)
 		break
 
 	case "exit_room", "EXIT_ROOM":
-		exit_room(conn, data)
+		exit_room(conn, data, Type)
 		break
 
 	case "msg_list", "MSG_LIST":
-		msg_list(conn, data)
+		msg_list(conn, data, Type)
 		break
 
 	case "private_msg", "PRIVATE_MSG":
-		private_msg(conn, data)
+		private_msg(conn, data, Type)
 		break
 
 	case "group_msg":
-		group_msg(conn, data)
+		group_msg(conn, data, Type)
 		break
 
 	case "requst_count":
-		requst_count(conn, data)
+		requst_count(conn, data, Type)
 		break
 
 	case "ping":
-		ping(conn, data)
+		ping(conn, data, Type)
 		break
 
 	case "api":
-		api(conn, data)
+		api(conn, data, Type)
 		break
 
 	case "clear_private_unread":
-		clear_private_unread(conn, data)
+		clear_private_unread(conn, data, Type)
 		break
 
 	case "clear_group_unread":
-		clear_group_unread(conn, data)
+		clear_group_unread(conn, data, Type)
 		break
 
 	default:
@@ -119,7 +120,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 	}
 }
 
-func auth_init(conn *websocket.Conn, data map[string]interface{}) {
+func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("authinit", data)
 	uid := Calc.Any2String(data["uid"])
 	token := Calc.Any2String(data["token"])
@@ -127,7 +128,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 		res := map[string]interface{}{
 			"code": 400,
 			"data": "uid&token",
-			"type": data["type"],
+			"type": Type,
 		}
 		if config.DEBUG {
 			fmt.Println("auth_init", res)
@@ -149,7 +150,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 		res := map[string]interface{}{
 			"code": 400,
 			"data": "网络错误请重试",
-			"type": data["type"],
+			"type": Type,
 		}
 		conn.WriteJSON(res)
 	} else {
@@ -158,7 +159,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			if config.DEBUG {
 				fmt.Println("DEBUG", ret, err)
@@ -190,7 +191,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": -1,
 					"data": "未登录",
-					"type": data["type"],
+					"type": Type,
 				}
 				if config.DEBUG {
 					fmt.Println("DEBUG", res)
@@ -201,52 +202,52 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 	}
 }
 
-func join_room(conn *websocket.Conn, data map[string]interface{}) {
+func join_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["chat_type"] == "private" {
 			res := map[string]interface{}{
 				"code": 0,
 				"data": "已经加入和" + Calc.Any2String(data["id"]),
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else if data["chat_type"] == "group" {
 			res := map[string]interface{}{
 				"code": 0,
 				"data": "已经加入和" + Calc.Any2String(data["id"]),
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "类型不存在",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		}
 		Room[Conn2User[conn]] = Calc.Any2String(data["id"])
 		fmt.Println("rooom:", Room[Conn2User[conn]])
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func exit_room(conn *websocket.Conn, data map[string]interface{}) {
+func exit_roomauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		Room[Conn2User[conn]] = "0"
 		res := map[string]interface{}{
 			"code": 0,
 			"data": "退出至大厅",
-			"type": data["type"],
+			"type": Type,
 		}
 		conn.WriteJSON(res)
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func msg_list(conn *websocket.Conn, data map[string]interface{}) {
+func msg_listauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("msg_list", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
@@ -260,7 +261,7 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -269,25 +270,25 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "消息列表数据不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 
 }
 
-func private_msg(conn *websocket.Conn, data map[string]interface{}) {
+func private_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("private_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
@@ -302,7 +303,7 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -311,24 +312,24 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "消息列表数据不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func group_msg(conn *websocket.Conn, data map[string]interface{}) {
+func group_msgauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	fmt.Println("group_msg", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Group_msg, nil, map[string]interface{}{
@@ -343,7 +344,7 @@ func group_msg(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -352,24 +353,24 @@ func group_msg(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "消息列表数据不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func requst_count(conn *websocket.Conn, data map[string]interface{}) {
+func requst_countauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Request_count, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
@@ -382,7 +383,7 @@ func requst_count(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -391,33 +392,33 @@ func requst_count(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "Req_Count不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func ping(conn *websocket.Conn, data map[string]interface{}) {
+func pingauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	res := map[string]interface{}{
 		"code": 0,
 		"data": "PONG",
-		"type": data["type"],
+		"type": Type,
 	}
 	conn.WriteJSON(res)
 }
 
-func api(conn *websocket.Conn, data map[string]interface{}) {
+func apiauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		function := Calc.Any2String(data["func"])
 		ret, err := Net.Post(config.CHAT_URL+config.ManualAPI+function, nil, map[string]interface{}{
@@ -431,7 +432,7 @@ func api(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -440,30 +441,30 @@ func api(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "API不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func clear_private_unread(conn *websocket.Conn, data map[string]interface{}) {
+func clear_private_unreadauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["id"] == nil {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "id",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 			return
@@ -480,7 +481,7 @@ func clear_private_unread(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -489,30 +490,30 @@ func clear_private_unread(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "API不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
-func clear_group_unread(conn *websocket.Conn, data map[string]interface{}) {
+func clear_group_unreadauth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 	if Conn2User[conn] != "" {
 		if data["id"] == nil {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "id",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 			return
@@ -529,7 +530,7 @@ func clear_group_unread(conn *websocket.Conn, data map[string]interface{}) {
 			res := map[string]interface{}{
 				"code": 400,
 				"data": "网络错误请重试",
-				"type": data["type"],
+				"type": Type,
 			}
 			conn.WriteJSON(res)
 		} else {
@@ -538,19 +539,19 @@ func clear_group_unread(conn *websocket.Conn, data map[string]interface{}) {
 				res := map[string]interface{}{
 					"code": 404,
 					"data": "API不完整",
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			} else {
 				res := map[string]interface{}{
 					"code": rtt["code"],
 					"data": rtt["data"],
-					"type": data["type"],
+					"type": Type,
 				}
 				conn.WriteJSON(res)
 			}
 		}
 	} else {
-		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
+		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
