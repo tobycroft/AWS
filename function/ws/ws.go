@@ -124,6 +124,12 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 	uid := Calc.Any2String(data["uid"])
 	token := Calc.Any2String(data["token"])
 	if uid == "" || token == "" {
+		res := map[string]interface{}{
+			"code": 400,
+			"data": "uid&token",
+			"type": data["type"],
+		}
+		conn.WriteJSON(res)
 		On_close(conn)
 		fmt.Println("uid_not_exists,UID-token不存在")
 	}
