@@ -129,6 +129,9 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 			"data": "uid&token",
 			"type": data["type"],
 		}
+		if config.DEBUG {
+			fmt.Println("auth_init", res)
+		}
 		conn.WriteJSON(res)
 		On_close(conn)
 		fmt.Println("uid_not_exists,UID-token不存在")
@@ -136,7 +139,7 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 	ret, err := Net.Post(config.CHAT_URL+config.AuthURL, nil, map[string]interface{}{
 		"uid":   uid,
 		"token": token,
-		"type":  1,
+		"type":  data["type"],
 		"ip":    conn.RemoteAddr(),
 	}, nil, nil)
 	if config.DEBUG_AUTH {
