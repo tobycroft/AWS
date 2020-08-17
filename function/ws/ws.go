@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-var User2Conn map[string]*websocket.Conn
-var Conn2User map[*websocket.Conn]string
-var Room map[string]string
+var User2Conn = make(map[string]*websocket.Conn)
+var Conn2User = make(map[*websocket.Conn]string)
+var Room = make(map[string]string)
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
@@ -156,7 +156,10 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}) {
 			}
 			conn.WriteJSON(res)
 		} else {
-			if rtt["code"] == 0 {
+			if config.DEBUG {
+				fmt.Println(rtt)
+			}
+			if rtt["code"].(float64) == 0 {
 				User2Conn[uid] = conn
 				Conn2User[conn] = uid
 				Room[uid] = "0"
