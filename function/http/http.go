@@ -77,7 +77,7 @@ func Handler(c *gin.Context) {
 }
 
 func json_handler(c *gin.Context, json map[string]interface{}, to_users []interface{}, dest string, Type string) {
-	fmt.Println("json_handler", json)
+	//fmt.Println("json_handler", json)
 	uids := []interface{}{}
 	uidf := []interface{}{}
 	data := map[string]interface{}{
