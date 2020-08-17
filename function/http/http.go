@@ -135,7 +135,7 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 
 	case "request_count":
 		for _, uid := range to_users {
-			if ws.Room[Calc.Any2String(uid)] == 0 {
+			if ws.Room[Calc.Any2String(uid)] == "0" {
 				conn := ws.User2Conn[Calc.Any2String(uid)]
 				if conn != nil {
 					uids = append(uids, uid)
@@ -169,7 +169,7 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 
 	case "indoor_message":
 		for _, uid := range to_users {
-			if ws.Room[Calc.Any2String(uid)] == 0 {
+			if ws.Room[Calc.Any2String(uid)] == "0" {
 				conn := ws.User2Conn[Calc.Any2String(uid)]
 				if conn != nil {
 					uids = append(uids, uid)
@@ -181,7 +181,7 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 
 	case "outer_all":
 		for _, uid := range to_users {
-			if ws.Room[Calc.Any2String(uid)] != 0 {
+			if ws.Room[Calc.Any2String(uid)] != "0" {
 				conn := ws.User2Conn[Calc.Any2String(uid)]
 				if conn != nil {
 					uids = append(uids, uid)
@@ -217,14 +217,17 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 		}
 		break
 	}
-
-	c.JSON(200, map[string]interface{}{
+	resp := map[string]interface{}{
 		"code": 0,
 		"data": map[string]interface{}{
 			"success": uids,
 			"fail":    uidf,
 		},
-	})
+	}
+	if config.DEBUG_REMOTE_RET {
+		fmt.Println("resp:", resp)
+	}
+	c.JSON(200, resp)
 	c.Abort()
 	return
 
