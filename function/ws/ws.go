@@ -47,9 +47,6 @@ func Handler(json_str string, conn *websocket.Conn) {
 	if config.DEBUG_WS_REQ {
 		fmt.Println("DEBUG_WS_REQ", json_str)
 	}
-	if config.DEBUG_WS_REQ {
-		fmt.Println("DEBUG_WS_REQ:type", json["type"])
-	}
 	data, derr := Jsong.ParseObject(json["data"])
 	if derr != nil {
 		data = map[string]interface{}{}
@@ -188,6 +185,7 @@ func join_room(conn *websocket.Conn, data map[string]interface{}) {
 			}
 			conn.WriteJSON(res)
 		}
+		Room[Conn2User[conn]] = Calc.Any2String(data["id"])
 	} else {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
 	}
