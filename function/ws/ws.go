@@ -248,7 +248,6 @@ func exit_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func msg_list(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	fmt.Println("msg_list", Conn2User[conn], Room[Conn2User[conn]])
 	if Conn2User[conn] != "" {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
 			"uid": Conn2User[conn],
