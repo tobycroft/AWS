@@ -9,7 +9,7 @@ const DEBUG = true
 const DEBUG_AUTH = true
 const DEBUG_WS_REQ = true
 const DEBUG_WS_RET = false
-const DEBUG_REMOTE_RET = false
+const DEBUG_REMOTE_RET = true
 
 const TIMER = false
 const DEBUG_CONN = false
