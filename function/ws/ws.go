@@ -45,7 +45,7 @@ func On_exit(conn *websocket.Conn) {
 }
 
 func Handler(json_str string, conn *websocket.Conn) {
-	fmt.Println("json_str:", json_str)
+	fmt.Println("json_ws:", json_str)
 	json, jerr := Jsong.JObject(json_str)
 	if jerr != nil {
 		fmt.Println("jsonerr", jerr)
@@ -110,6 +110,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 }
 
 func auth_init(conn *websocket.Conn, data map[string]interface{}) {
+	fmt.Println("authinit", data)
 	uid := Calc.Any2String(data["uid"])
 	token := Calc.Any2String(data["token"])
 	if uid == "" || token == "" {
@@ -193,6 +194,7 @@ func join_room(conn *websocket.Conn, data map[string]interface{}) {
 			conn.WriteJSON(res)
 		}
 		Room[Conn2User[conn]] = Calc.Any2String(data["id"])
+		fmt.Println("rooom:", Room[Conn2User[conn]])
 	} else {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": data["type"]})
 	}
