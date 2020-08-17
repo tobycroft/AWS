@@ -304,14 +304,12 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
@@ -346,14 +344,12 @@ func group_msg(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
@@ -387,14 +383,12 @@ func requst_count(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
@@ -438,14 +432,12 @@ func api(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
@@ -489,14 +481,12 @@ func clear_private_unread(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {
@@ -540,14 +530,12 @@ func clear_group_unread(conn *websocket.Conn, data map[string]interface{}) {
 				}
 				conn.WriteJSON(res)
 			} else {
-				if rtt["code"] == 0 {
-					res := map[string]interface{}{
-						"code": 0,
-						"data": rtt["data"],
-						"type": data["type"],
-					}
-					conn.WriteJSON(res)
+				res := map[string]interface{}{
+					"code": rtt["code"],
+					"data": rtt["data"],
+					"type": data["type"],
 				}
+				conn.WriteJSON(res)
 			}
 		}
 	} else {

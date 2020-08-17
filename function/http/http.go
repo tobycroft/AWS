@@ -230,7 +230,7 @@ func json_handler(c *gin.Context, json map[string]interface{}, to_users []interf
 			"fail":    uidf,
 		},
 	}
-	if config.DEBUG_REMOTE_RET {
+	if config.DEBUG_SEND_RET {
 		fmt.Println("resp:", resp)
 	}
 	c.JSON(200, resp)
