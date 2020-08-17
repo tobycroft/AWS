@@ -82,21 +82,21 @@ func Handler(c *gin.Context) {
 }
 
 func json_handler(json map[string]interface{}, to_users []interface{}, dest string, Type string) {
-	//uids := []interface{}{}
-	//uidf := []interface{}{}
-	//data := map[string]interface{}{
-	//	"code": 0,
-	//	"data": json,
-	//	"type": Type,
-	//}
-	//switch Type {
-	//case "system":
-	//	for _, uid := range to_users {
-	//
-	//	}
-	//	break
-	//
-	//default:
-	//	break
-	//}
+	uids := []interface{}{}
+	uidf := []interface{}{}
+	data := map[string]interface{}{
+		"code": 0,
+		"data": json,
+		"type": Type,
+	}
+	switch Type {
+	case "system":
+		for _, uid := range to_users {
+
+		}
+		break
+
+	default:
+		break
+	}
 }
