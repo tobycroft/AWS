@@ -8,12 +8,15 @@ import (
 	"main.go/tuuz/Date"
 	"main.go/tuuz/Jsong"
 	"main.go/tuuz/Net"
+	"sync"
 	"time"
 )
 
-var User2Conn = make(map[string]*websocket.Conn)
 var Conn2User = make(map[*websocket.Conn]string)
-var Room = make(map[string]string)
+
+var User2Conn2 sync.Map
+var Conn2User2 sync.Map
+var Room2 sync.Map
 
 func On_connect(conn *websocket.Conn) {
 	//err := conn.WriteMessage(1, []byte("连入成功"))
@@ -44,10 +47,11 @@ func On_close(conn *websocket.Conn) {
 }
 
 func On_exit(conn *websocket.Conn) {
-	if Conn2User[conn] != "" {
-		delete(Room, Conn2User[conn])
-		delete(User2Conn, Conn2User[conn])
-		delete(Conn2User, conn)
+	uid, has := Conn2User2.Load(conn)
+	if has {
+		Room2.Delete(uid.(string))
+		User2Conn2.Delete(uid.(string))
+		Conn2User2.Delete(conn)
 	}
 }
 
@@ -170,9 +174,9 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 				fmt.Println(rtt)
 			}
 			if rtt["code"].(float64) == 0 {
-				User2Conn[uid] = conn
-				Conn2User[conn] = uid
-				Room[uid] = "0"
+				User2Conn2.Store(uid, conn)
+				Conn2User2.Store(conn, uid)
+				Room2.Store(uid, "0")
 				message := "欢迎" + uid + "连入聊天服务器"
 				if config.DEBUG {
 					fmt.Println(message)
@@ -203,7 +207,8 @@ func auth_init(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func join_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		if data["chat_type"] == "private" {
 			res := map[string]interface{}{
 				"code": 0,
@@ -226,15 +231,16 @@ func join_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 			}
 			conn.WriteJSON(res)
 		}
-		Room[Conn2User[conn]] = Calc.Any2String(data["id"])
+		Room2.Store(uid, Calc.Any2String(data["id"]))
 	} else {
 		conn.WriteJSON(map[string]interface{}{"code": -1, "data": "Auth_Fail", "type": Type})
 	}
 }
 
 func exit_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
-		Room[Conn2User[conn]] = "0"
+	uid, has := Conn2User2.Load(conn)
+	if has {
+		Room2.Store(uid, "0")
 		res := map[string]interface{}{
 			"code": 0,
 			"data": "退出至大厅",
@@ -247,9 +253,10 @@ func exit_room(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func msg_list(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		ret, err := Net.Post(config.CHAT_URL+config.Msg_list, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
 		if config.DEBUG_REMOTE_RET {
@@ -287,9 +294,10 @@ func msg_list(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func private_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		ret, err := Net.Post(config.CHAT_URL+config.Private_msg, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"fid": data["uid"],
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
@@ -327,9 +335,10 @@ func private_msg(conn *websocket.Conn, data map[string]interface{}, Type string)
 }
 
 func group_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		ret, err := Net.Post(config.CHAT_URL+config.Group_msg, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"fid": data["uid"],
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
@@ -367,9 +376,10 @@ func group_msg(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func requst_count(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		ret, err := Net.Post(config.CHAT_URL+config.Request_count, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
 		if config.DEBUG_REMOTE_RET {
@@ -415,10 +425,11 @@ func ping(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func api(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		function := Calc.Any2String(data["func"])
 		ret, err := Net.Post(config.CHAT_URL+config.ManualAPI+function, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
 		if config.DEBUG_REMOTE_RET {
@@ -455,7 +466,8 @@ func api(conn *websocket.Conn, data map[string]interface{}, Type string) {
 }
 
 func clear_private_unread(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		if data["id"] == nil {
 			res := map[string]interface{}{
 				"code": 400,
@@ -466,7 +478,7 @@ func clear_private_unread(conn *websocket.Conn, data map[string]interface{}, Typ
 			return
 		}
 		ret, err := Net.Post(config.CHAT_URL+config.Clear_private_unread, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"fid": data["id"],
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
@@ -504,7 +516,8 @@ func clear_private_unread(conn *websocket.Conn, data map[string]interface{}, Typ
 }
 
 func clear_group_unread(conn *websocket.Conn, data map[string]interface{}, Type string) {
-	if Conn2User[conn] != "" {
+	uid, has := Conn2User2.Load(conn)
+	if has {
 		if data["id"] == nil {
 			res := map[string]interface{}{
 				"code": 400,
@@ -515,7 +528,7 @@ func clear_group_unread(conn *websocket.Conn, data map[string]interface{}, Type 
 			return
 		}
 		ret, err := Net.Post(config.CHAT_URL+config.Clear_group_unread, nil, map[string]interface{}{
-			"uid": Conn2User[conn],
+			"uid": uid,
 			"gid": data["id"],
 			"ip":  conn.RemoteAddr(),
 		}, nil, nil)
