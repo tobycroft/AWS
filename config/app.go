@@ -20,8 +20,8 @@ const REDIS_PORT = "6379"
 
 const KEY = "gn8knscieinuincsiuni4ur0wherur"
 
-const WALLET_URL = "http://localhost"
+const WALLET_URL = "http://127.0.0.1"
 const WALLET_PORT = "80"
 
-const CHAT_URL = "http://localhost"
+const CHAT_URL = "http://127.0.0.1"
 const CHAT_PORT = "80"
