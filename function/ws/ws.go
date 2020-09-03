@@ -69,7 +69,7 @@ func Handler(json_str string, conn *websocket.Conn) {
 	}
 	data, derr := Jsong.ParseObject(json["data"])
 	if derr != nil {
-		fmt.Println("ws_derr:", derr)
+		fmt.Println("ws_derr:", derr, json["data"])
 		data = map[string]interface{}{}
 		return
 	}
