@@ -71,7 +71,6 @@ func Handler(json_str string, conn *websocket.Conn) {
 	if derr != nil {
 		fmt.Println("ws_derr:", derr, json["data"])
 		data = map[string]interface{}{}
-		return
 	}
 	Type := Calc.Any2String(json["type"])
 	switch Type {
